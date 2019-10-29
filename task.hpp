@@ -7,7 +7,6 @@
 
 struct task
 {
-public:
     int index;
     int arrivalTime;
     int runTime;
