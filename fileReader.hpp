@@ -6,18 +6,18 @@
 #define OK_FILEREADER_HPP
 
 #include <fstream>
+#include <utility>
 
 class fileReader
 {
 private:
     std::fstream fileHandler;
+    const std::string fileName;
     std::string line;
 
 public:
-    fileReader(const std::string & fileName)
+    explicit fileReader(std::string  fileName) : fileName(std::move(fileName))
     {
-        fileHandler.open(fileName, std::ios::in);
-        prepareFile();
     }
 
     std::string getLine()
@@ -33,6 +33,12 @@ public:
 
     virtual ~fileReader() {
         fileHandler.close();
+    }
+
+    void open()
+    {
+        fileHandler.open(fileName, std::ios::in);
+        prepareFile();
     }
 
 private:

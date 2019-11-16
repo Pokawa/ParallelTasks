@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 #include "fileReader.hpp"
 #include "task.hpp"
 #include "fileCommentReader.hpp"
@@ -23,6 +24,7 @@ private:
 
 public:
     explicit instanceFactory(const std::string &fileName, const int &maxTasks = -1) : dataFeed(fileName), numberOfTasksToRead(maxTasks), commentReader(fileName){
+        parsedTask = {};
         reserveBuffer();
     }
 
@@ -48,12 +50,18 @@ private:
 
     void collectTasks()
     {
+        initializeFile();
         while(isNext())
         {
             getLine();
             parseLine();
             pushToReadyIfValid();
         }
+    }
+
+    void initializeFile()
+    {
+        dataFeed.open();
     }
 
     bool isNext()
@@ -74,7 +82,7 @@ private:
     void parseLine()
     {
         std::istringstream stream{line};
-        int index, arrivalTime, dummySeparator, runTime, procUsage;
+        int index = 0, arrivalTime = 0, dummySeparator = 0, runTime = 0, procUsage = 0;
         stream >> index >> arrivalTime >> dummySeparator >> runTime >> procUsage;
         parsedTask = {index, arrivalTime, runTime, procUsage};
     }
