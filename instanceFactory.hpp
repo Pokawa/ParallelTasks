@@ -25,7 +25,6 @@ private:
 public:
     explicit instanceFactory(const std::string &fileName, const int &maxTasks = -1) : dataFeed(fileName), numberOfTasksToRead(maxTasks), commentReader(fileName){
         parsedTask = {};
-        reserveBuffer();
     }
 
     std::vector<task> generate()
@@ -42,12 +41,6 @@ public:
 
 private:
 
-    void reserveBuffer()
-    {
-        if (numberOfTasksToRead > 0)
-            readyTasks.reserve(numberOfTasksToRead);
-    }
-
     void collectTasks()
     {
         initializeFile();
@@ -56,6 +49,7 @@ private:
             getLine();
             parseLine();
             pushToReadyIfValid();
+            numberOfTasksToRead--;
         }
     }
 
@@ -92,7 +86,6 @@ private:
         if (parsedTask.isValid())
         {
             readyTasks.push_back(parsedTask);
-            numberOfTasksToRead--;
         }
     }
 };
