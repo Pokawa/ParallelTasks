@@ -21,6 +21,11 @@ struct task
     {
         return procUsage <= freeProcs;
     }
+
+    bool isReady(const int & currentTime) const
+    {
+        return arrivalTime <= currentTime;
+    }
 };
 
 struct taskWorking : public task
