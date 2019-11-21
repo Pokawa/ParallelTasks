@@ -15,6 +15,7 @@ int main(int argv, char *argc[]) {
     auto procs = factory.maxProcessors();
     auto res = greedy(tasks, procs);
 
+    
     auto p2 = std::chrono::steady_clock::now();
 
 
