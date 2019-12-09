@@ -33,7 +33,7 @@ int main(int argv, char *argc[]) {
 //            break;
 //    }
     config::load();
-    std::cout << config::failsLimit << config::neighboursCount << config::tabuListSize << config::changesCount;
+    std::cout << config::failsLimit << config::neighboursCount << config::tabuListSizeLimit << config::changesCount;
 
     instanceFactory factory{"test7.swf"};
     auto vec = factory.generate();
