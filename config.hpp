@@ -16,6 +16,7 @@ namespace config
     static int processors;
     static bool verbose = false;
     static int secondsTimeLimit = 60 + 60 + 60 + 60 + 50;
+    static int mikrosecondsTimeLimit = secondsTimeLimit * 1000;
 
     static std::chrono::time_point<std::chrono::system_clock> startTime = std::chrono::system_clock::now();
 
@@ -30,16 +31,21 @@ namespace config
         file.close();
     }
 
-    int getRunTimeSeconds()
+    void resetClock()
+    {
+        startTime = std::chrono::system_clock::now();
+    }
+
+    int getRunTime()
     {
         auto currentTime = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime);
         return duration.count();
     }
 
     bool properRunTime()
     {
-        return (getRunTimeSeconds() <= secondsTimeLimit);
+        return (getRunTime() <= mikrosecondsTimeLimit);
     }
 }
 

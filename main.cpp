@@ -22,6 +22,7 @@ int main(int argv, char *argc[]) {
         switch (p)
         {
             case 'h':
+                config::resetClock();
                 out = greedy(tasks, procs);
                 break;
             case 'm':
@@ -37,7 +38,7 @@ int main(int argv, char *argc[]) {
                 std::cout << out.length() << "\n";
                 break;
             case 't':
-                std::cout << config::getRunTimeSeconds() << "\n";
+                std::cout << config::getRunTime() << "\n";
                 break;
             case 'd':
                 std::cout << getLastTheoreticalEndingTime(tasks) << "\n";

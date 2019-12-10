@@ -273,6 +273,8 @@ solution toSolution(const std::vector<taskFinishedProcessors> & item)
 }
 
 result getTabuSearchResult(const std::vector<task> & tasks, int procs, bool verbose = false) {
+    config::resetClock();
+
     if (verbose)
         config::verbose = true;
 
