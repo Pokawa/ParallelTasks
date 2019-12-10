@@ -179,7 +179,7 @@ std::vector<neighbour> getNeighbours(const std::list<int> &tabuList, const solut
 
     std::vector<neighbour> out;
     std::vector<int> usedIndexes;
-    for (int i = 0; i < config::neighboursCount; ++i)
+    for (int i = 0; i < std::min(config::neighboursCount, (int)parentSolution.size()); ++i)
     {
         int a;
         do
@@ -212,15 +212,53 @@ solution tabuSearch(const solution &solution) {
     auto failsCount = 0;
     std::list<int> tabuList;
 
+    int sameLengthSolution = 0;
+
     while (failsCount < config::failsLimit and config::properRunTime()) {
         auto neighbours = getNeighbours(tabuList, best);
         candidate = *std::min_element(neighbours.begin(), neighbours.end(), byLength);
 
-        if (getLength(candidate.first) < getLength(best)) {
+        failsCount++;
+
+        auto vCandidate = getLength(candidate.first);
+        auto vBest = getLength(best);
+        if ( vCandidate <=  vBest )
+        {
+
+            if (vCandidate < vBest) {
+                failsCount = 0;
+                if (config::verbose) {
+
+                    if (sameLengthSolution > 0) {
+                        std::cout << "--- " << sameLengthSolution << "\n";
+                        sameLengthSolution = 0;
+                    }
+
+                    std::cout << "Nowe: ID " << candidate.second << " L " << vCandidate
+                              << "\n";
+                    auto pos1 = std::find_if(best.begin(), best.end(), [&candidate](const taskFinished &item) {
+                        return item.index == candidate.second;
+                    });
+                    auto pos2 = std::find_if(candidate.first.begin(), candidate.first.end(),
+                                             [&candidate](const taskFinished &item) {
+                                                 return item.index == candidate.second;
+                                             });
+                    std::cout << "z " << pos1 - best.begin() << " do " << pos2 - candidate.first.begin()
+                              << "\n";
+                }
+            } else
+                sameLengthSolution++;
+
+
             best = candidate.first;
             tabuList.push_back(candidate.second);
-        } else
-            failsCount++;
+        }
+
+        if (config::verbose and failsCount == config::failsLimit)
+            std::cout << "Osiagnieto limit porazek: " << failsCount << "\n";
+
+        if (config::verbose and !config::properRunTime())
+            std::cout << "Osiagnieto limit czasu: " << config::secondsTimeLimit << "s \n";
 
         if (tabuList.size() > config::tabuListSizeLimit)
             tabuList.pop_front();
@@ -233,5 +271,30 @@ solution toSolution(const std::vector<taskFinishedProcessors> & item)
 {
     return solution{item.begin(), item.end()};
 }
+
+result getTabuSearchResult(const std::vector<task> & tasks, int procs, bool verbose = false) {
+    if (verbose)
+        config::verbose = true;
+
+    auto res = greedySeparated(tasks, procs);
+
+    if (verbose)
+    {
+        auto tail = res.getTail();
+        auto smallestId = std::min_element(tail.begin(), tail.end(), [](const task & a, const task & b){ return a.index < b.index; });
+        std::cout << "Ogon: ilosc " << tail.size() << " pierwszeId " << smallestId->index << "\n";
+    }
+
+    auto searchSolution = tabuSearch(toSolution(res.getTail()));
+    auto numerated = numerateProcessors(searchSolution);
+    auto buff = res.getHead();
+
+    buff.insert(buff.end(), numerated.begin(), numerated.end());
+    return result{buff};
+
+    config::verbose = false;
+}
+
+
 
 #endif //OK_TABUSEARCH_HPP

@@ -13,8 +13,9 @@ namespace config
     static int failsLimit;
     static int tabuListSizeLimit;
     static int neighboursCount;
-    static int changesCount;
     static int processors;
+    static bool verbose = false;
+    static int secondsTimeLimit = 60 + 60 + 60 + 60 + 50;
 
     static std::chrono::time_point<std::chrono::system_clock> startTime = std::chrono::system_clock::now();
 
@@ -26,8 +27,6 @@ namespace config
         file >> tabuListSizeLimit;
         file.ignore(256, '\n');
         file >> neighboursCount;
-        file.ignore(256, '\n');
-        file >> changesCount;
         file.close();
     }
 
@@ -40,7 +39,7 @@ namespace config
 
     bool properRunTime()
     {
-        return (getRunTimeSeconds() <= 60 + 60 + 60 + 60 + 50);
+        return (getRunTimeSeconds() <= secondsTimeLimit);
     }
 }
 

@@ -92,5 +92,11 @@ private:
     }
 };
 
+int getLastTheoreticalEndingTime(const std::vector<task> & tasks)
+{
+    auto lastTask = std::max_element(tasks.begin(), tasks.end(), [](const task & a, const task & b){ return a.arrivalTime + a.runTime < b.arrivalTime + b.runTime; });
+    return lastTask->arrivalTime + lastTask->runTime;
+}
+
 
 #endif //OK_INSTANCEFACTORY_HPP

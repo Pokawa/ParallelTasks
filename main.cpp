@@ -17,35 +17,35 @@ int main(int argv, char *argc[]) {
     result out{std::vector<taskFinishedProcessors>()};
 
     std::string parameters = argc[1];
-    if (parameters.find('h') != std::string::npos)
+    for (auto p : parameters)
     {
-        out = greedy(tasks, procs);
+        switch (p)
+        {
+            case 'h':
+                out = greedy(tasks, procs);
+                break;
+            case 'm':
+                out = getTabuSearchResult(tasks, procs);
+                break;
+            case 'v':
+                out = getTabuSearchResult(tasks, procs, true);
+                break;
+            case 'p':
+                out.print();
+                break;
+            case 'l':
+                std::cout << out.length() << "\n";
+                break;
+            case 't':
+                std::cout << config::getRunTimeSeconds() << "\n";
+                break;
+            case 'd':
+                std::cout << getLastTheoreticalEndingTime(tasks) << "\n";
+                break;
+            default:
+                std::cout << "Nieznany parametr: " << p << "\n";
+                break;
+        }
     }
-
-    if (parameters.find('m') != std::string::npos)
-    {
-        auto res = greedySeparated(tasks, procs);
-        auto searchSolution = tabuSearch(toSolution(res.getTail()));
-        auto numerated = numerateProcessors(searchSolution);
-        auto buff = res.getHead();
-        buff.insert(buff.end(), numerated.begin(), numerated.end());
-        out = result(buff);
-    }
-
-    if (parameters.find('p') != std::string::npos)
-    {
-        out.print();
-    }
-
-    if (parameters.find('l') != std::string::npos)
-    {
-        std::cout << out.length() << "\n";
-    }
-
-    if (parameters.find('t') != std::string::npos)
-    {
-        std::cout << config::getRunTimeSeconds() << "\n";
-    }
-
     return 0;
 }
