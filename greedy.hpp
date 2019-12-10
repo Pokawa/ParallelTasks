@@ -9,97 +9,23 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-
-class result
-{
-protected:
-    std::vector<taskWorking> tasks;
-    int finalLength;
-
-public:
-    explicit result(std::vector<taskWorking> in) : tasks(std::move(in)), finalLength(tasks.back().endingTime)
-    {}
-
-    void print()
-    {
-        for (auto & a : tasks)
-        {
-            std::cout << a.index << " " << a.endingTime - a.runTime << " " << a.endingTime << " ";
-            for (auto & p: a.processors)
-                std::cout << p << " ";
-            std::cout << "\n";
-        }
-    }
-
-    int length()
-    {
-        return finalLength;
-    };
-};
-
-class resultSeparated : public result
-{
-    int separatorId;
-    std::vector<taskWorking> head;
-    std::vector<taskWorking> tail;
-public:
-    resultSeparated(std::vector<taskWorking> in, const int & separataorId) : result(std::move(in)), separatorId(separataorId)
-    {
-        if (separatorId == 0)
-            initDefault();
-        else
-            initHeadTail();
-
-        sort();
-    }
-
-    std::vector<taskWorking> getHead()
-    {
-        return head;
-    }
-
-    std::vector<taskWorking> getTail()
-    {
-        return tail;
-    }
-
-private:
-    void sort()
-    {
-        auto byStaritngTimeASC = [](const taskWorking & a, const taskWorking & b){ return (a.endingTime - a.runTime) < (b.endingTime - b.runTime); };
-        std::sort(head.begin(), head.end(), byStaritngTimeASC);
-        std::sort(tail.begin(), tail.end(), byStaritngTimeASC);
-    }
-
-    void initHeadTail()
-    {
-        auto isSeparator = [this](const taskWorking & item){ return item.index == separatorId; };
-        auto position = std::find_if(tasks.begin(), tasks.end(), isSeparator);
-        head = std::vector<taskWorking>(tasks.begin(), position+1);
-        tail = std::vector<taskWorking>(position+1, tasks.end());
-    }
-
-    void initDefault()
-    {
-        tail = tasks;
-    }
-};
+#include "greedyResults.hpp"
 
 result greedy(std::vector<task> tasks, int procs)
 {
     std::vector<task> tasksReady;
-    std::vector<taskWorking> tasksRunning;
-    std::vector<taskWorking> tasksFinished;
+    std::vector<taskFinishedProcessors> tasksRunning;
+    std::vector<taskFinishedProcessors> tasksFinished;
     tasksFinished.reserve(tasksFinished.size());
 
     std::vector<bool> processors(procs, false);
     int freeProcs = procs;
     int currentTime = 0;
 
-    auto isFinished = [&currentTime](const taskWorking & task){ return task.isFinished(currentTime); };
+    auto isFinished = [&currentTime](const taskFinishedProcessors & task){ return task.isFinished(currentTime); };
     auto isReady = [&currentTime](const task & item){ return item.isReady(currentTime); };
     auto fits = [&freeProcs](const task & task){ return task.isFit(freeProcs); };
-    auto freeProcessors = [&freeProcs, &processors](const taskWorking &task) {
+    auto freeProcessors = [&freeProcs, &processors](const taskFinishedProcessors &task) {
         freeProcs += task.processors.size();
         for (auto &proc : task.processors)
             processors[proc] = false;
@@ -110,7 +36,7 @@ result greedy(std::vector<task> tasks, int procs)
         else
             return a.runTime > b.runTime;
     };
-    auto byEndingTimeAsc = [](const taskWorking & a, const taskWorking & b){ return a.endingTime < b.endingTime; };
+    auto byEndingTimeAsc = [](const taskFinishedProcessors & a, const taskFinishedProcessors & b){ return a.endingTime < b.endingTime; };
     auto byArrivalTime = [](const task & a, const task & b){ return a.arrivalTime < b.arrivalTime; };
 
 
@@ -172,8 +98,8 @@ result greedy(std::vector<task> tasks, int procs)
 resultSeparated greedySeparated(std::vector<task> tasks, int procs)
 {
     std::vector<task> tasksReady;
-    std::vector<taskWorking> tasksRunning;
-    std::vector<taskWorking> tasksFinished;
+    std::vector<taskFinishedProcessors> tasksRunning;
+    std::vector<taskFinishedProcessors> tasksFinished;
     tasksFinished.reserve(tasksFinished.size());
     int separatorId = 0;
 
@@ -181,10 +107,10 @@ resultSeparated greedySeparated(std::vector<task> tasks, int procs)
     int freeProcs = procs;
     int currentTime = 0;
 
-    auto isFinished = [&currentTime](const taskWorking & task){ return task.isFinished(currentTime); };
+    auto isFinished = [&currentTime](const taskFinishedProcessors & task){ return task.isFinished(currentTime); };
     auto isReady = [&currentTime](const task & item){ return item.isReady(currentTime); };
     auto fits = [&freeProcs](const task & task){ return task.isFit(freeProcs); };
-    auto freeProcessors = [&freeProcs, &processors](const taskWorking &task) {
+    auto freeProcessors = [&freeProcs, &processors](const taskFinishedProcessors &task) {
         freeProcs += task.processors.size();
         for (auto &proc : task.processors)
             processors[proc] = false;
@@ -195,7 +121,7 @@ resultSeparated greedySeparated(std::vector<task> tasks, int procs)
         else
             return a.runTime > b.runTime;
     };
-    auto byEndingTimeAsc = [](const taskWorking & a, const taskWorking & b){ return a.endingTime < b.endingTime; };
+    auto byEndingTimeAsc = [](const taskFinishedProcessors & a, const taskFinishedProcessors & b){ return a.endingTime < b.endingTime; };
     auto byArrivalTime = [](const task & a, const task & b){ return a.arrivalTime < b.arrivalTime; };
     auto arrivedNow = [&currentTime](const task & item){ return item.arrivalTime >= currentTime; };
 

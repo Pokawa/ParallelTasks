@@ -12,6 +12,7 @@
 #include "fileReader.hpp"
 #include "task.hpp"
 #include "fileCommentReader.hpp"
+#include "config.hpp"
 
 class instanceFactory {
 private:
@@ -36,6 +37,7 @@ public:
     int maxProcessors()
     {
         std::string value = commentReader.getValue("MaxProcs:");
+        config::processors = std::stoi(value);
         return std::stoi(value);
     }
 
@@ -49,7 +51,6 @@ private:
             getLine();
             parseLine();
             pushToReadyIfValid();
-            numberOfTasksToRead--;
         }
     }
 
@@ -86,6 +87,7 @@ private:
         if (parsedTask.isValid())
         {
             readyTasks.push_back(parsedTask);
+            numberOfTasksToRead--;
         }
     }
 };

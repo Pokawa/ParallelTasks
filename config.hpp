@@ -14,6 +14,7 @@ namespace config
     static int tabuListSizeLimit;
     static int neighboursCount;
     static int changesCount;
+    static int processors;
 
     static std::chrono::time_point<std::chrono::system_clock> startTime = std::chrono::system_clock::now();
 
@@ -39,7 +40,7 @@ namespace config
 
     bool properRunTime()
     {
-        return (getRunTimeSeconds() >= 60 + 60 + 60 + 60 + 50);
+        return (getRunTimeSeconds() <= 60 + 60 + 60 + 60 + 50);
     }
 }
 

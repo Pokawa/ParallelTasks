@@ -17,34 +17,42 @@ struct task
         return index > 0 && arrivalTime >= 0 && runTime > 0 && procUsage > 0;
     }
 
-    bool isFit(const int & freeProcs) const
+    [[nodiscard]] bool isFit(const int & freeProcs) const
     {
         return procUsage <= freeProcs;
     }
 
-    bool isReady(const int & currentTime) const
+    [[nodiscard]] bool isReady(const int & currentTime) const
     {
         return arrivalTime <= currentTime;
     }
 };
 
-struct taskWorking : public task
+struct taskFinished : public task
 {
     int endingTime;
-    std::vector<int> processors;
 
-    explicit taskWorking(const task & val, const int & currentTime, std::vector<int> && processors) : task(val), endingTime(currentTime + runTime), processors(processors)
+    explicit taskFinished(const task & val, const int & currentTime) : task(val), endingTime(currentTime + runTime)
     {}
 
-    bool isRunning(const int & currentTime) const
+
+    [[nodiscard]] bool isRunning(const int & currentTime) const
     {
         return endingTime > currentTime;
     }
 
-    bool isFinished(const int & currentTime) const
+    [[nodiscard]] bool isFinished(const int & currentTime) const
     {
         return !isRunning(currentTime);
     }
+};
+
+struct taskFinishedProcessors : public taskFinished
+{
+    std::vector<int> processors;
+
+    explicit taskFinishedProcessors(const task & val, const int & currentTime, std::vector<int> && processors) : taskFinished(val, currentTime), processors(processors)
+    {}
 };
 
 
