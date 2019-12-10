@@ -279,15 +279,22 @@ result getTabuSearchResult(const std::vector<task> & tasks, int procs, bool verb
         config::verbose = true;
 
     auto res = greedySeparated(tasks, procs);
+    auto tail = res.getTail();
 
     if (verbose)
     {
-        auto tail = res.getTail();
         auto smallestId = std::min_element(tail.begin(), tail.end(), [](const task & a, const task & b){ return a.index < b.index; });
         std::cout << "Ogon: ilosc " << tail.size() << " pierwszeId " << smallestId->index << "\n";
     }
 
     auto searchSolution = tabuSearch(toSolution(res.getTail()));
+
+    if (verbose)
+    {
+        auto endGreedy = getLastTheoreticalEndingTime(tail);
+        std::cout << "Dlugosc idealna: " << endGreedy << " otrzymana: " << getLength(searchSolution) << " jakosc: " << (float)getLength(searchSolution)/endGreedy << "\n";
+    }
+
     auto numerated = numerateProcessors(searchSolution);
     auto buff = res.getHead();
 
