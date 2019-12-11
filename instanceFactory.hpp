@@ -97,8 +97,9 @@ int getTheoreticalMinumumTime(const T & tasks)
 {
     long long sum = 0;
     std::for_each(tasks.begin(), tasks.end(), [&sum](const task & item){ sum += item.runTime; });
+    sum /= config::processors;
     auto lastTask = std::max_element(tasks.begin(), tasks.end(), [](const task & a, const task & b){ return a.arrivalTime + a.runTime < b.arrivalTime + b.runTime; });
-    return std::max(lastTask->arrivalTime + lastTask->runTime, sum / config::processors);
+    return std::max(lastTask->arrivalTime + lastTask->runTime, (int)sum);
 }
 
 
