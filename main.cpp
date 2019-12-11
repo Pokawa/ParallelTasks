@@ -41,7 +41,7 @@ int main(int argv, char *argc[]) {
                 std::cout << config::getRunTime() << "\n";
                 break;
             case 'd':
-                std::cout << getLastTheoreticalEndingTime(tasks) << "\n";
+                std::cout << getTheoreticalMinumumTime(tasks) << "\n";
                 break;
             default:
                 std::cout << "Nieznany parametr: " << p << "\n";

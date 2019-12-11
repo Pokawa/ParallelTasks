@@ -254,8 +254,9 @@ solution tabuSearch(const solution &solution) {
             tabuList.push_back(candidate.second);
         }
 
-        if (config::verbose and failsCount == config::failsLimit)
-            std::cout << "Osiagnieto limit porazek: " << failsCount << "\n";
+        if (config::verbose and failsCount == config::failsLimit) {
+            std::cout << "Osiagnieto limit porazek: " << failsCount  << " ilosc rozwian o tej samej dlugosci: " << sameLengthSolution << "\n";
+        }
 
         if (config::verbose and !config::properRunTime())
             std::cout << "Osiagnieto limit czasu: " << config::secondsTimeLimit << "s \n";
@@ -291,7 +292,7 @@ result getTabuSearchResult(const std::vector<task> & tasks, int procs, bool verb
 
     if (verbose)
     {
-        auto endGreedy = getLastTheoreticalEndingTime(tail);
+        auto endGreedy = getTheoreticalMinumumTime(tail);
         std::cout << "Dlugosc idealna: " << endGreedy << " otrzymana: " << getLength(searchSolution) << " jakosc: " << (float)getLength(searchSolution)/endGreedy << "\n";
     }
 
