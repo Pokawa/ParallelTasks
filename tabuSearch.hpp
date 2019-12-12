@@ -251,19 +251,19 @@ solution tabuSearch(const solution &solution) {
 
 
             best = candidate.first;
-            tabuList.push_back(candidate.second);
         }
-
-        if (config::verbose and failsCount == config::failsLimit) {
-            std::cout << "Osiagnieto limit porazek: " << failsCount  << " ilosc rozwian o tej samej dlugosci: " << sameLengthSolution << "\n";
-        }
-
-        if (config::verbose and !config::properRunTime())
-            std::cout << "Osiagnieto limit czasu: " << config::secondsTimeLimit << "s \n";
+        tabuList.push_back(candidate.second);
 
         if (tabuList.size() > config::tabuListSizeLimit)
             tabuList.pop_front();
     }
+
+    if (config::verbose and failsCount == config::failsLimit)
+        std::cout << "Osiagnieto limit porazek: " << failsCount  << " ilosc rozwian o tej samej dlugosci: " << sameLengthSolution << "\n";
+
+
+    if (config::verbose and !config::properRunTime())
+        std::cout << "Osiagnieto limit czasu: " << config::secondsTimeLimit << "s \n";
 
     return best;
 }
